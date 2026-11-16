@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>صفحه اصلی</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="bridge.js"></script>
+</head>
+<body>
+  <h1>🌉 پل جاوااسکریپت ↔ کاتلین</h1>
+
+  <div class="card">
+    <h2>Toast</h2>
+    <button class="btn" id="btnToast">Toast کوتاه</button>
+    <button class="btn secondary" id="btnToastLong">Toast بلند</button>
+  </div>
+
+  <div class="card">
+    <h2>نوتیفیکیشن</h2>
+    <input id="nTitle" placeholder="عنوان" value="سلام">
+    <input id="nText" placeholder="متن" value="این یک نوتیفیکیشن تستی است">
+    <button class="btn" id="btnNotify">ارسال نوتیفیکیشن</button>
+  </div>
+
+  <div class="card">
+    <h2>ارسال پیامک</h2>
+    <input id="smsPhone" type="tel" placeholder="شماره، مثلا 09123456789" dir="ltr">
+    <textarea id="smsText" placeholder="متن پیامک (متن بلند هم پشتیبانی می‌شود)"></textarea>
+    <div class="hint">تعداد کاراکتر: <span id="smsCount">0</span></div>
+    <button class="btn" id="btnSms">ارسال پیامک</button>
+    <div id="smsStatus"></div>
+  </div>
+
+  <div class="card">
+    <h2>ناوبری</h2>
+    <a class="btn secondary" href="page2.html">رفتن به صفحه دوم</a>
+    <button class="btn" id="btnExit">خروج / بازگشت</button>
+    <p class="hint">در صفحه اصلی این دکمه از برنامه خارج می‌شود؛ در صفحه‌های دیگر به عقب برمی‌گردد. دکمه‌ی Back گوشی هم همین رفتار را دارد.</p>
+  </div>
+
+  <script>
+    var $ = function (id) { return document.getElementById(id); };
+
+    $('btnToast').onclick = function () { App.toast('سلام از جاوااسکریپت 👋'); };
+    $('btnToastLong').onclick = function () { App.toastLong('این یک پیام بلندتر است که کمی بیشتر نمایش داده می‌شود'); };
+
+    $('btnNotify').onclick = function () {
+      App.notify($('nTitle').value, $('nText').value);
+    };
+
+    $('smsText').oninput = function () { $('smsCount').textContent = this.value.length; };
+
+    $('btnSms').onclick = function () {
+      var phone = $('smsPhone').value.trim();
+      var text = $('smsText').value;
+      if (!phone || !text.trim()) {
+        App.toast('شماره و متن پیامک را وارد کنید');
+        return;
+      }
+      $('smsStatus').textContent = '⏳ در حال ارسال…';
+      App.sendSms(phone, text);
+    };
+
+    // نتیجه‌ی ارسال از کاتلین برمی‌گردد
+    App.onSmsResult = function (phone, ok, message) {
+      $('smsStatus').textContent = (ok ? '✅ ' : '❌ ') + phone + ' — ' + message;
+      App.toast(message);
+    };
+
+    $('btnExit').onclick = function () { App.exitOrBack(); };
+  </script>
+</body>
+</html>
